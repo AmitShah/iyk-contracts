@@ -68,6 +68,45 @@ describe("Boss", function () {
       const receipt = await tx.wait()
       expect(receipt.status).to.eq(1);
     })
+
+    it("Can reject non owner eip712",async function name() {
+      const { boss, owner,otherAccount } = await loadFixture(deployBossFixture);
+      const networkId =await network.provider.send('eth_chainId');
+      const domain = {
+        name: "BossERC1155",
+        version: "1",
+        chainId: networkId,
+        verifyingContract: await boss.getAddress(),
+      };
+      /*
+        struct AttackRequest {
+            uint256 tokenId;
+            uint256 quantity;
+            address user;
+            bytes32 uid;
+        }
+      */
+      const types = {
+        AttackRequest: [
+          { name: "tokenId", type: "uint256" },
+          { name: "quantity", type: "uint256" },
+          { name: "user", type: "address" },
+          { name: "uid", type: "bytes32" },
+        ],
+      };
+      const attackRequest = {
+        tokenId: 0,
+        quantity:50,
+        user:otherAccount.address,
+        uid: ethers.randomBytes(32)
+      };
+      const signature = await otherAccount.signTypedData(domain,types,attackRequest);
+      console.log("typescript signer address:",otherAccount.address);
+      
+      await expect(boss.attackWithSignature(attackRequest,signature))
+        .to.be.revertedWith('unauthorized command');
+      
+    })
   });
 
 });
