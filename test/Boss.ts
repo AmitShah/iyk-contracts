@@ -60,7 +60,7 @@ describe("Boss", function () {
         tokenId: 0,
         quantity:50,
         user:otherAccount.address,
-        uid: ethers.randomBytes(32)
+        uid: ethers.hexlify(ethers.randomBytes(32))
       };
       const signature = await owner.signTypedData(domain,types,attackRequest);
       console.log("typescript signer address:",owner.address);
@@ -98,7 +98,7 @@ describe("Boss", function () {
         tokenId: 0,
         quantity:50,
         user:otherAccount.address,
-        uid: ethers.randomBytes(32)
+        uid: ethers.hexlify(ethers.randomBytes(32))
       };
       const signature = await otherAccount.signTypedData(domain,types,attackRequest);
       console.log("typescript signer address:",otherAccount.address);

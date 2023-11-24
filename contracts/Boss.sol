@@ -76,10 +76,26 @@ contract Boss is ERC1155Drop,EIP712 {
     {
         //attackAmount = IEnumerable ERC1155 items.multiplier
        //pass in eip712 object signed by owner that hp.transfer(userAddress,attackAmount)
+       require(_nonce[_req.uid]==false, "_nonce already used");
        signer = _recoverAddress(_req, _signature);
        console.log("recovered signer:",signer);
        require(signer == owner(), "unauthorized command");
-        // success = !minted[_req.uid] && _canSignMintRequest(signer);
+        uint attack = 66;
+    //    for (uint256 i=0;i<3; i++){
+    //        attack+= this.balanceOf(_req.user,i); //.balanceOf[_req.user][i];
+    //    }
+       console.log("attack:",attack);
+       console.log("hitpoints:",hitpoints[_req.tokenId]);
+        if(hitpoints[_req.tokenId] < attack){
+            hitpoints[_req.tokenId]= 0;
+        }else{
+            hitpoints[_req.tokenId]= attack;
+        }
+        _nonce[_req.uid] = true;
+        if(address(hp) != address(0)){
+            hp.transfer(_req.user,attack);
+
+        }
        return signer;
     }
 
